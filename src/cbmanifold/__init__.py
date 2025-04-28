@@ -1,9 +1,11 @@
-from . import plot
-from . import decomposition
-
 class LinearModel:
     def __init__(self):
         pass
+
+
+from . import plot
+from . import decomposition
+
 
 # from collections import namedtuple
 
