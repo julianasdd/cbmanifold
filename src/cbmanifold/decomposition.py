@@ -2,7 +2,7 @@ import numpy as np
 from scipy.linalg import eigh
 import warnings
 
-from . import LinearModel
+from . import linear_model
 
 
 def pmPCA(x, normalize=True):
@@ -86,7 +86,7 @@ def reduce_dimensionality(lm, dim_target, normalize=True):
     dp0 = dp0[:dim_target, :]
 
     # copy the data and save the dimensionality reduction
-    lm_reduced = LinearModel()
+    lm_reduced = linear_model.LinearModel()
     lm_reduced.dim = dim_target
     lm_reduced.n_params = lm.n_params
     lm_reduced.z0 = lm.z0
@@ -99,7 +99,8 @@ def reduce_dimensionality(lm, dim_target, normalize=True):
     lm_reduced.rate = v[:, :dim_target] @ lm_reduced.p
     lm_reduced.drate0 = v[:, :dim_target] @ lm_reduced.dp0
 
-    # begin computing the perturbation
+    # here is the core of this code to compute how PCA results are affected by small perturbations
+    # begin computing perturbations
     z = nnrate.T
     zc = z - np.mean(z)
 
@@ -109,15 +110,13 @@ def reduce_dimensionality(lm, dim_target, normalize=True):
     # perturbed covariance matrix
     cc1 = (dzc.T @ zc + zc.T @ dzc) / L
 
-    # eigenvalue perturbation
+    # prepare eigenvalue perturbation and a mixing matrix
     dl = np.zeros_like(d0)
-
-    # prepare a mixing matrix
     ckn = np.zeros((N, N))
     assert N == len(d0)
 
-    w0 = v
     # compute the mixing matrix
+    w0 = v
     for i in range(N):
         dl[i] = w0[:, i].T @ cc1 @ w0[:, i]
         xx = np.setdiff1d(np.arange(len(d0)), i)
@@ -137,7 +136,7 @@ def reduce_dimensionality(lm, dim_target, normalize=True):
     # approximation of the individual rate by dp1
     lm_reduced.drate1 = v[:, :dim_target] @ lm_reduced.dp1
 
-    # full approximation
+    # full approximation including de
     lm_reduced.drate2 = (
         -v[:, dim_target:] @ de[:, dim_target:].T @ v[:, :dim_target] @ p
     )
