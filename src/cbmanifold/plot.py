@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_linear_model(lm, t_range=(-250, 251), axs=None):
+def plot_linear_model(lm, t_range=(-250, 251), cmap="seismic", axs=None):
     tt = np.arange(*t_range)
     cells = np.arange(1, lm.dim + 1)
 
@@ -14,7 +14,7 @@ def plot_linear_model(lm, t_range=(-250, 251), axs=None):
         tt,
         cells,
         lm.rate,
-        cmap="seismic",
+        cmap=cmap,
         vmin=-np.abs(lm.rate).max(),
         vmax=np.abs(lm.rate).max(),
     )
@@ -22,7 +22,7 @@ def plot_linear_model(lm, t_range=(-250, 251), axs=None):
         tt,
         cells,
         lm.drate,
-        cmap="seismic",
+        cmap=cmap,
         vmin=-np.abs(lm.drate).max(),
         vmax=np.abs(lm.drate).max(),
     )
