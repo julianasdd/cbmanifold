@@ -46,17 +46,18 @@ def generate_linear_model_old(
         - r00: grand average average velocity
     """
 
-    vpeak = np.abs(params[:][0])  # peak velocity
-    sdur = np.abs(params[:][1])  # duration
-    ss = rate_matrix  # rate matrix
+    vpeak = np.abs(params[:,0])  # peak velocity
+    sdur = np.abs(params[:,1])  # duration
+    vave = target_dist / sdur * 1e3  # average velocity
+    ss = rate_matrix * 1.0  # rate matrix
 
     ss0 = np.nanmean(ss, axis=0)  # mean rate across trials
     dss = ss - ss0  # deviation from mean rate
     v0 = np.nanmean(vpeak)  # mean peak velocity
-    r0 = np.nanmean(target_dist / sdur)  # mean average velocity
+    r0 = np.nanmean(vave)  # mean average velocity
 
     dv = vpeak - v0
-    dr = target_dist / sdur - r0
+    dr = vave - r0
     dz = np.stack((dv, dr), axis=1)  # shape (Trial, 2)
 
     # Full model coefficients
@@ -67,7 +68,7 @@ def generate_linear_model_old(
     wr = w12[1, :]  # duration coefficients
 
     # Reduced model with only velocity
-    wv0 = (dv.T @ dss) / (dv.T @ dv)  # shape (Time,)
+    wv0 = (dv.T @ dss) / (dv**2).sum()  # shape (Time,)
 
     # Grand averages
     v00 = params0[0]
@@ -83,11 +84,10 @@ def generate_linear_model_old(
 
     # here test whether output_type is LinearModel or dict
     if output_type == "LinearModel":
-        linmod = LinearModel()
+        linmod = LinearModel(label=label, rate=ssc, drate=w12)
         linmod.wv0 = wv0
         linmod.wv = wv
         linmod.wr = wr
-        linmod.ssc = ssc
         linmod.ssc0 = ssc0
         linmod.v00 = v00
         linmod.r00 = r00
@@ -97,6 +97,8 @@ def generate_linear_model_old(
             "wv0": wv0,
             "wv": wv,
             "wr": wr,
+            "rate": ssc,
+            "drate": w12,
             "ssc": ssc,
             "ssc0": ssc0,
             "v00": v00,
@@ -106,9 +108,7 @@ def generate_linear_model_old(
     return linmod
 
 
-def generate_linear_model(
-    label, rate_matrix, params, params0, output_type="dict"
-):
+def generate_linear_model(label, rate_matrix, params, params0, output_type="dict"):
     """
     Generate a linear model of the rate matrix.
 
