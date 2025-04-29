@@ -7,7 +7,7 @@ class LinearModel:
 
 
 def generate_linear_model_old(
-    rate_matrix, params, params0, target_dist=10.0, output_type="LinearModel"
+    rate_matrix, params, params0, target_dist=10.0, output_type="dict"
 ):
     """
     Generate a linear model of the rate matrix.
@@ -97,7 +97,7 @@ def generate_linear_model_old(
     return linmod
 
 
-def generate_linear_model(rate_matrix, params, params0, output_type="LinearModel"):
+def generate_linear_model(rate_matrix, params, params0, output_type="dict"):
     """
     Generate a linear model of the rate matrix.
 
@@ -119,24 +119,24 @@ def generate_linear_model(rate_matrix, params, params0, output_type="LinearModel
         - params0: grand average parameters
     """
 
-    ss = rate_matrix  # rate matrix
+    ss = rate_matrix * 1.0  # rate matrix, multiply 1.0 for dense copy
 
     ss0 = np.nanmean(ss, axis=0)  # mean rate across trials
     dss = ss - ss0  # deviation from mean rate
     p0 = np.nanmean(params, axis=0)  # mean parameters
 
-    dz = params - p0[np.newaxis, :]
+    dz = params - p0
 
     # Full model coefficients
     cc = dz.T @ dz
     drate = np.linalg.pinv(cc) @ dz.T @ dss  # shape (2, Time)
 
-    # Grand averages
-    v00 = params0[0]
-    r00 = params0[1]
+    # convert params0 to ndarray if not already
+    if not isinstance(params0, np.ndarray):
+        params0 = np.array(params0)
 
     # Corrected PSTH for full model
-    wc = (params - p0) @ drate
+    wc = (params0 - p0) @ drate
     rate = ss0 + wc
 
     # here test whether output_type is LinearModel or dict
