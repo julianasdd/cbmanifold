@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def plot_linear_model(lm, t_range=(-250, 251), cmap="seismic", axs=None):
     tt = np.arange(*t_range)
-    cells = np.arange(1, lm.dim + 1)
+    cells = np.arange(1, lm.rate.shape[0] + 1)
 
     if axs is None:
         fig, axs = plt.subplots(1, 2, figsize=(6, 5), sharey=True)

@@ -86,14 +86,12 @@ def reduce_dimensionality(lm, dim_target, normalize=True):
     dp0 = dp0[:dim_target, :]
 
     # copy the data and save the dimensionality reduction
-    lm_reduced = linear_model.LinearModel()
+    lm_reduced = linear_model.LinearModel(label=lm.label, is_dim_reduced=True)
     lm_reduced.dim = dim_target
     lm_reduced.n_params = lm.n_params
     lm_reduced.z0 = lm.z0
     lm_reduced.p = p
     lm_reduced.dp0 = dp0
-    lm_reduced.label = lm.label
-    lm_reduced.is_dim_reduced = True
 
     # approximate the individual rates by the dimensionality reduced representation
     lm_reduced.rate = v[:, :dim_target] @ lm_reduced.p

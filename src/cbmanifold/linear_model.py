@@ -1,9 +1,13 @@
+from dataclasses import dataclass
 import numpy as np
 
 
+@dataclass
 class LinearModel:
-    def __init__(self):
-        pass
+    label: str
+    rate: np.ndarray = None
+    drate: np.ndarray = None
+    is_dim_reduced: bool = False
 
 
 def generate_linear_model_old(
