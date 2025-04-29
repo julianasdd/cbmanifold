@@ -11,19 +11,22 @@ class LinearModel:
 
 
 def generate_linear_model_old(
-    rate_matrix, params, params0, target_dist=10.0, output_type="dict"
+    label, rate_matrix, params, params0, target_dist=10.0, output_type="dict"
 ):
     """
     Generate a linear model of the rate matrix.
 
     Parameters:
+    - label (str): Label for the linear model
     - rate_matrix (ndarray): Rate matrix (Trial x Time)
     - params (ndarray): Parameters (peak velocity, duration, etc.) shape (Trial x n_params)
     - params0 (array-like): Grand average parameters, e.g., [peak velocity, average velocity, etc.]
+    - target_dist (float): Target distance, default is 10.0
     - output_type (str): Type of output, either "LinearModel" or "dict"
     Returns:
     If output_type is "LinearModel":
         linmod (LinearModel): Linear model structure containing
+        - label: model label
         - wv0: reduced model velocity coefficients
         - wv: full model velocity coefficients
         - wr: full model duration coefficients
@@ -33,6 +36,7 @@ def generate_linear_model_old(
         - r00: grand average average velocity
     If output_type is "dict":
         linmod (dict): Linear model structure containing:
+        - label: model label
         - wv0: reduced model velocity coefficients
         - wv: full model velocity coefficients
         - wr: full model duration coefficients
@@ -89,6 +93,7 @@ def generate_linear_model_old(
         linmod.r00 = r00
     elif output_type == "dict":
         linmod = {
+            "label": label,
             "wv0": wv0,
             "wv": wv,
             "wr": wr,
@@ -101,11 +106,14 @@ def generate_linear_model_old(
     return linmod
 
 
-def generate_linear_model(rate_matrix, params, params0, output_type="dict"):
+def generate_linear_model(
+    label, rate_matrix, params, params0, output_type="dict"
+):
     """
     Generate a linear model of the rate matrix.
 
     Parameters:
+    - label (str): Label for the linear model
     - rate_matrix (ndarray): Rate matrix (Trial x Time)
     - params (ndarray): Parameters (peak velocity, duration, etc.) shape (Trial x n_params)
     - params0 (array-like): Grand average parameters, e.g., [peak velocity, average velocity, etc.]
@@ -113,11 +121,13 @@ def generate_linear_model(rate_matrix, params, params0, output_type="dict"):
     Returns:
     If output_type is "LinearModel":
         linmod (LinearModel): Linear model structure containing
+        - label: model label
         - rate: corrected PSTH for full model
         - drate: model coefficients for each parameter
         - params0: grand average parameters
     If output_type is "dict":
         linmod (dict): Linear model structure containing:
+        - label: model label
         - rate: corrected PSTH for full model
         - drate: model coefficients for each parameter
         - params0: grand average parameters
@@ -145,13 +155,12 @@ def generate_linear_model(rate_matrix, params, params0, output_type="dict"):
 
     # here test whether output_type is LinearModel or dict
     if output_type == "LinearModel":
-        linmod = LinearModel()
-        linmod.rate = rate
-        linmod.drate = drate
+        linmod = LinearModel(label=label, rate=rate, drate=drate)
         linmod.params0 = params0
 
     elif output_type == "dict":
         linmod = {
+            "label": label,
             "rate": rate,
             "drate": drate,
             "params0": params0,
