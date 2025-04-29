@@ -1,8 +1,4 @@
-class LinearModel:
-    def __init__(self):
-        pass
-
-
+from . import linear_model
 from . import plot
 from . import decomposition
 
