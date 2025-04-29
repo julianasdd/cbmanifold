@@ -18,6 +18,6 @@ Please check out an [example notebook](https://github.com/shhong/cbmanifold/blob
 - Sungho Hong ([@shhong](https://github.com/shhong))
 
 ---
-Written by [Sungho Hong](https://github.com/shhong), Center for Cognition and Sociality, Institute for Basic Science
+Written by [Sungho Hong](https://shhong.github.io), Center for Cognition and Sociality, Institute for Basic Science
 
 April, 2025
