@@ -9,7 +9,13 @@ Currently, the package is not available on PyPI. You can install it by cloning t
 
 ## Usage
 
-To be added.
+Please check out an [example notebook](https://github.com/shhong/cbmanifold/blob/main/notebooks/Manifold_analysis_example.ipynb).
+
+## Contributors
+
+- Jisub Bae ([@jisub-bae](https://github.com/jisub-bae/))
+- Juliana Silva de Deus ([@julianasdd](https://github.com/julianasdd))
+- Sungho Hong ([@shhong](https://github.com/shhong))
 
 ---
 Written by [Sungho Hong](https://github.com/shhong), Center for Cognition and Sociality, Institute for Basic Science
