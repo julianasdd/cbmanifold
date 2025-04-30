@@ -7,7 +7,54 @@ class LinearModel:
     label: str
     rate: np.ndarray = None
     drate: np.ndarray = None
+    params0: np.ndarray = None
+
     is_dim_reduced: bool = False
+
+    def predict(self, params):
+        """
+        Predict the rate matrix from the parameters.
+        """
+
+        if isinstance(params, (list, int, float)):
+            params = np.array(params)
+        assert (
+            params.shape[-1] == self.drate.shape[0]
+        ), f"Number of parameters ({params.shape[-1]}) must match number of parameter derivatives ({self.drate.shape[0]})"
+        return self.rate + (params - self.params0) @ self.drate
+
+    @classmethod
+    def from_dict(cls, d):
+        """
+        Convert a dictionary to a LinearModel object.
+
+        Parameters
+        ----------
+        d : dict
+            Dictionary containing linear model data. Must have 'label' key.
+            Optional keys are 'rate', 'drate', 'params0', 'is_dim_reduced'.
+            Any additional keys will be added as attributes to the object.
+
+        Returns
+        -------
+        LinearModel
+            New LinearModel object with data from dictionary
+        """
+        # Create base LinearModel with required/optional fields
+        lm = cls(
+            label=d['label'],
+            rate=d.get('rate'),
+            drate=d.get('drate'),
+            params0=d.get('params0'),
+            is_dim_reduced=d.get('is_dim_reduced', False)
+        )
+
+        # Add any additional fields from dict as attributes
+        for k, v in d.items():
+            if k not in ['label', 'rate', 'drate', 'params0', 'is_dim_reduced']:
+                setattr(lm, k, v)
+
+        return lm
 
 
 def generate_linear_model_old(
@@ -46,8 +93,8 @@ def generate_linear_model_old(
         - r00: grand average average velocity
     """
 
-    vpeak = np.abs(params[:,0])  # peak velocity
-    sdur = np.abs(params[:,1])  # duration
+    vpeak = np.abs(params[:, 0])  # peak velocity
+    sdur = np.abs(params[:, 1])  # duration
     vave = target_dist / sdur * 1e3  # average velocity
     ss = rate_matrix * 1.0  # rate matrix
 
@@ -84,7 +131,7 @@ def generate_linear_model_old(
 
     # here test whether output_type is LinearModel or dict
     if output_type == "LinearModel":
-        linmod = LinearModel(label=label, rate=ssc, drate=w12)
+        linmod = LinearModel(label=label, rate=ssc, drate=w12, params0=params0)
         linmod.wv0 = wv0
         linmod.wv = wv
         linmod.wr = wr
@@ -99,6 +146,7 @@ def generate_linear_model_old(
             "wr": wr,
             "rate": ssc,
             "drate": w12,
+            "params0": params0,
             "ssc": ssc,
             "ssc0": ssc0,
             "v00": v00,
