@@ -89,7 +89,7 @@ def reduce_dimensionality(lm, dim_target, normalize=True):
     lm_reduced = linear_model.LinearModel(label=lm.label, is_dim_reduced=True)
     lm_reduced.dim = dim_target
     lm_reduced.n_params = lm.n_params
-    lm_reduced.z0 = lm.z0
+    lm_reduced.params0 = lm.params0
     lm_reduced.p = p
     lm_reduced.dp0 = dp0
 
