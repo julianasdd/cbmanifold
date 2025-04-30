@@ -49,12 +49,12 @@ def plot_linear_model(lm, t_range=(-250, 251), cmap="seismic", axs=None):
 
 def plot_var_explained(var_explained, dmax=15, ax=None):
     if ax is None:
-        fig, ax = plt.subplots(figsize=(1.25, 3))
+        fig, ax = plt.subplots(figsize=(1.25, 2))
 
     dims = np.arange(1, dmax + 1)
     vars_to_plot = var_explained[:dmax]
     ax.plot(dims, vars_to_plot, ":k", linewidth=0.5)
-    ax.plot(dims, vars_to_plot, "or")
+    ax.plot(dims, vars_to_plot, "o", markerfacecolor="w", markeredgecolor="k")
     ax.set_ylabel("variance explained (%)")
     ax.set_xlabel("dimension")
     ax.set_xlim(-0.5, dmax + 1)
@@ -62,3 +62,4 @@ def plot_var_explained(var_explained, dmax=15, ax=None):
     plt.tight_layout()
 
     return (fig, ax)
+
