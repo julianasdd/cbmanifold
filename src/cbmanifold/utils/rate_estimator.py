@@ -19,6 +19,44 @@ def get_rate_matrix(tspike, tbounds, method = "fracrate", **options):
 
     return rates
 
+def fracrate_matrix(spike_matrix, wsize=15, window_type="tukey"):
+    """
+    Computes firing rates from a binary spike matrix (trials x time).
+    
+    Parameters:
+    - spike_matrix: np.ndarray of shape (n_trials, time)
+    - wsize: int, window size for smoothing
+    - window_type: str, type of window to use (e.g., "tukey", "hann")
+    
+    Returns:
+    - rate_matrix: np.ndarray of same shape as spike_matrix
+    """
+    n_trials, L = spike_matrix.shape
+    rate_matrix = np.zeros_like(spike_matrix, dtype=float)
+
+    win = get_window(window_type, wsize)
+    win /= win.sum()
+
+    for i in range(n_trials):
+        tspike = np.where(spike_matrix[i] == 1)[0]
+        r = np.zeros(L)
+        if len(tspike) >= 2:
+            isi = np.diff(tspike) / 1e3  # convert to seconds
+            for j in range(len(tspike) - 1):
+                r[tspike[j]:tspike[j+1]] = 1 / isi[j]
+
+        # Smooth the rate using the convolution
+        rx = np.convolve(r, win, mode="valid")
+        delta = L - rx.size
+        d2 = delta // 2 + 1
+        r[:d2] = rx[0]
+        r[d2:d2+rx.size] = rx
+        r[d2+rx.size:] = rx[-1]
+
+        rate_matrix[i] = r
+
+    return rate_matrix
+
 
 def fracrate(tspike, tend, wsize=5, window_type="tukey"):
     L = tend + 1
