@@ -19,6 +19,7 @@ def get_rate_matrix(tspike, tbounds, method = "fracrate", **options):
 
     return rates
 
+# rate matrix function to use fractioned rate
 def fracrate_matrix(spike_matrix, wsize=15, window_type="tukey"):
     """
     Computes firing rates from a binary spike matrix (trials x time).
